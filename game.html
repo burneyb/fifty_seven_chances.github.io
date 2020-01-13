@@ -33,14 +33,15 @@
       <!-- card deck and player selection -->
       <div class="row">
         <div class="game-area__header">
-          <div class="game-area__chooser"><span class="current_player"></span> make a selection</div>
+          <div class="game-area__chooser"><span class="message">make a selection</span></div>
           <div class="card-deck">Number of cards: <span class="cards-remaining"></span></div>
         </div>
       </div>
 
       <div class="row">
         <div col-md-3>
-          <button onclick="newGame()">Start New Game</button>
+          <button class="game-area__new-game-btn" onclick="newGame()">Start New Game</button>
+          <button class="game-area__player-flip" onclick="flipCard()"><span class="current_player">flip</span></button>
         </div>
         <div col-md-3></div>
         <div col-md-3></div>
@@ -54,21 +55,17 @@
 
   
   <script>
-    console.log(localStorage.getItem('user_one'));
-    console.log(localStorage.getItem('user_two'));
-
-     debugger;
-
-
+    //players
     const playerOne = JSON.parse(localStorage.getItem('user_one'));
     const playerTwo = JSON.parse(localStorage.getItem('user_two'));
 
-   
-
+    //display players
     document.querySelector('.player_one').innerHTML = playerOne.name;
     document.querySelector('.player_two').innerHTML = playerTwo.name;
 
     //Number of cards remaining in deck
+    let gameDeck; //the newly shuffle deck for each game
+
     const cards = [
         // { cardType: 'Spade', cardValue: 'Big Joker' },
         // { cardType: 'Spade', cardValue: 'Little Joker' },
@@ -139,12 +136,38 @@
         document.querySelector('.game-area__chooser').style.display = 'none';
         document.querySelector('.player_one__score').innerHTML = playerOne.points || 0;
         document.querySelector('.player_two__score').innerHTML = playerTwo.points || 0;
+
+        document.querySelector('.game-area__player-flip').style.display = 'none';
       }
 
       initializeGame();
 
       function newGame() {
+        document.querySelector('.game-area__chooser').style.display = 'block';
+        document.querySelector('.game-area__player-flip').style.display = 'block';
+
+        document.querySelector('.game-area__chooser').innerHTML = `${playerOne.name} make a selection` ;
+        document.querySelector('.game-area__player-flip').innerHTML = `${playerOne.name } flip`;
+
+        document.querySelector('.game-area__new-game-btn').style.display = 'none';
+
+        //shuffle game deck
+        gameDeck = shuffle(cards);
+        console.log('New game deck: ', gameDeck);
         //set player points to zero
+       
+      }
+
+      function shuffle(a) {
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+
+      function flipCard() {
+        //random choose a 
       }
     
   </script>
