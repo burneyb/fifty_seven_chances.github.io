@@ -1,0 +1,152 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Start New Game</title>
+  <style>
+    .score-bar{
+      display: flex; 
+      flex-direction :row;
+      justify-content: space-around;
+    }
+
+    .game-area__header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+      <a href="index.html">Back home</a>
+      <div class="row">
+        <div class="score-bar">
+            <div>Player 1: <span class="player_one"></span> Score: <span class="player_one__score"></span></div>
+            <div>Bop, Bop, Boop!</div>
+            <div>Player 2: <span class="player_two"></span> Score: <span class="player_two__score"></span></div>
+        </div> 
+   
+      </div>
+
+      <!-- card deck and player selection -->
+      <div class="row">
+        <div class="game-area__header">
+          <div class="game-area__chooser"><span class="current_player"></span> make a selection</div>
+          <div class="card-deck">Number of cards: <span class="cards-remaining"></span></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div col-md-3>
+          <button onclick="newGame()">Start New Game</button>
+        </div>
+        <div col-md-3></div>
+        <div col-md-3></div>
+        <div col-md-3></div>
+      </div>
+      
+      
+      </div>
+    
+  </div>
+
+  
+  <script>
+    console.log(localStorage.getItem('user_one'));
+    console.log(localStorage.getItem('user_two'));
+
+     debugger;
+     
+
+    const playerOne = JSON.parse(localStorage.getItem('user_one'));
+    const playerTwo = JSON.parse(localStorage.getItem('user_two'));
+
+   
+
+    document.querySelector('.player_one').innerHTML = playerOne.name;
+    document.querySelector('.player_two').innerHTML = playerTwo.name;
+
+    //Number of cards remaining in deck
+    const cards = [
+        // { cardType: 'Spade', cardValue: 'Big Joker' },
+        // { cardType: 'Spade', cardValue: 'Little Joker' },
+        { cardType: 'Spade', cardValue: 'Ace', cardWeight: 27 },
+        { cardType: 'Spade', cardValue: 'King', cardWeight: 26 },
+        { cardType: 'Spade', cardValue: 'Queen', cardWeight: 25 },
+        { cardType: 'Spade', cardValue: 'Jack', cardWeight: 24 },
+        { cardType: 'Spade', cardValue: '10', cardWeight: 23 },
+        { cardType: 'Spade', cardValue: '9', cardWeight: 22 },
+        { cardType: 'Spade', cardValue: '8', cardWeight: 21 },
+        { cardType: 'Spade', cardValue: '7', cardWeight: 20 },
+        { cardType: 'Spade', cardValue: '6', cardWeight: 19 },
+        { cardType: 'Spade', cardValue: '5', cardWeight: 18 },
+        { cardType: 'Spade', cardValue: '4', cardWeight: 17 },
+        { cardType: 'Spade', cardValue: '3', cardWeight: 16 },
+        { cardType: 'Spade', cardValue: '2', cardWeight: 15 },
+        { cardType: 'Diamond', cardValue: 'Ace', cardWeight: 14 },
+        { cardType: 'Diamond', cardValue: 'King', cardWeight: 13 },
+        { cardType: 'Diamond', cardValue: 'Queen', cardWeight: 12 },
+        { cardType: 'Diamond', cardValue: 'Jack', cardWeight: 11 },
+        { cardType: 'Diamond', cardValue: '10', cardWeight: 10 },
+        { cardType: 'Diamond', cardValue: '9', cardWeight: 9 },
+        { cardType: 'Diamond', cardValue: '8', cardWeight: 8 },
+        { cardType: 'Diamond', cardValue: '7', cardWeight: 7 },
+        { cardType: 'Diamond', cardValue: '6', cardWeight: 6 },
+        { cardType: 'Diamond', cardValue: '5', cardWeight: 5 },
+        { cardType: 'Diamond', cardValue: '4', cardWeight: 4 },
+        { cardType: 'Diamond', cardValue: '3', cardWeight: 3 },
+        { cardType: 'Diamond', cardValue: '2', cardWeight: 2 },
+        { cardType: 'Club', cardValue: 'Ace', cardWeight: 14 },
+        { cardType: 'Club', cardValue: 'King', cardWeight: 13 },
+        { cardType: 'Club', cardValue: 'Queen', cardWeight: 12 },
+        { cardType: 'Club', cardValue: 'Jack', cardWeight: 11 },
+        { cardType: 'Club', cardValue: '10', cardWeight: 10 },
+        { cardType: 'Club', cardValue: '9', cardWeight: 9 },
+        { cardType: 'Club', cardValue: '8', cardWeight: 8 },
+        { cardType: 'Club', cardValue: '7', cardWeight: 7 },
+        { cardType: 'Club', cardValue: '6', cardWeight: 6 },
+        { cardType: 'Club', cardValue: '5', cardWeight: 5 },
+        { cardType: 'Club', cardValue: '4', cardWeight: 4 },
+        { cardType: 'Club', cardValue: '3', cardWeight: 3 },
+        { cardType: 'Club', cardValue: '2', cardWeight: 2 },
+        { cardType: 'Heart', cardValue: 'Ace', cardWeight: 14 },
+        { cardType: 'Heart', cardValue: 'King', cardWeight: 13 },
+        { cardType: 'Heart', cardValue: 'Queen', cardWeight: 12 },
+        { cardType: 'Heart', cardValue: 'Jack', cardWeight: 11 },
+        { cardType: 'Heart', cardValue: '10', cardWeight: 10 },
+        { cardType: 'Heart', cardValue: '9', cardWeight: 9 },
+        { cardType: 'Heart', cardValue: '8', cardWeight: 8 },
+        { cardType: 'Heart', cardValue: '7', cardWeight: 7 },
+        { cardType: 'Heart', cardValue: '6', cardWeight: 6 },
+        { cardType: 'Heart', cardValue: '5', cardWeight: 5 },
+        { cardType: 'Heart', cardValue: '4', cardWeight: 4 },
+        { cardType: 'Heart', cardValue: '3', cardWeight: 3 },
+        { cardType: 'Heart', cardValue: '2', cardWeight: 2 },
+        { cardType: 'Bop', cardValue: 'Pass to next player', cardWeight: 28 },
+        { cardType: 'Bop', cardValue: 'Pass to next player', cardWeight: 28 },
+        { cardType: 'Bop', cardValue: 'Pass to next player', cardWeight: 28 },
+        { cardType: 'Bop', cardValue: 'Pass to next player', cardWeight: 28 },
+        { cardType: 'Booop', cardValue: 'Take a double shot', cardWeight: 9 },
+      ];
+
+      document.querySelector('.cards-remaining').innerHTML = cards.length || 0;
+
+      // let randomNum = Math.floor(Math.random() * (cards.length - 1));
+
+      function initializeGame(){
+        document.querySelector('.game-area__chooser').style.display = 'none';
+        document.querySelector('.player_one__score').innerHTML = playerOne.points || 0;
+        document.querySelector('.player_two__score').innerHTML = playerTwo.points || 0;
+      }
+
+      initializeGame();
+
+      function newGame() {
+        //set player points to zero
+      }
+    
+  </script>
+</body>
+</html>
