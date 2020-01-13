@@ -17,10 +17,10 @@
     <div class="form-group">
       <h1>Start game by entering the name of both teams or players</h1>
       <form>
-        <label for="user_one">Enter the name of Player 1</label>
-        <input class="form-control" type="text" name="user_one">
-        <label for="user_two">Enter the name of Player 2</label>
-        <input class="form-control" type="text" name="user_two">
+        <label for="playerOne">Enter the name of Player 1</label>
+        <input class="form-control" type="text" name="playerOne">
+        <label for="playerTwo">Enter the name of Player 2</label>
+        <input class="form-control" type="text" name="playerTwo">
         <button id="submit-names" class="btn btn-primary">Submit</button>
       </form>
     </div>
@@ -46,8 +46,8 @@
 
           console.log('Form about to be submitted ', data);
 
-          localStorage.setItem('user_one', JSON.stringify({name: data.user_one, points: 0}));
-          localStorage.setItem('user_two', JSON.stringify({ name: data.user_two, points: 0 }));
+          localStorage.setItem('playerOne', JSON.stringify({name: data.playerOne, points: 0, turn: true}));
+          localStorage.setItem('playerTwo', JSON.stringify({name: data.playerTwo, points: 0, turn: false }));
 
           e.preventDefault();
 
