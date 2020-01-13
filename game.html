@@ -39,13 +39,20 @@
       </div>
 
       <div class="row">
-        <div col-md-3>
+        <div class="col-md-3">
           <button class="game-area__new-game-btn" onclick="newGame()">Start New Game</button>
           <button class="game-area__player-flip" onclick="flipCard()"><span class="current_player">flip</span></button>
         </div>
-        <div col-md-3></div>
-        <div col-md-3></div>
-        <div col-md-3></div>
+     
+        <div class="col-md-3">
+          <div class="player_one_card"></div>
+        </div>
+        <div class="col-md-3">
+          <div class="player_two_card"></div>
+        </div>
+        <div class="col-md-3">
+          <button class="game-area__new-game-btn" onclick="shuffleDeck()">Shuffle Deck</button>
+        </div>
       </div>
       
       
@@ -56,88 +63,90 @@
   
   <script>
     //players
-    const playerOne = JSON.parse(localStorage.getItem('user_one'));
-    const playerTwo = JSON.parse(localStorage.getItem('user_two'));
+    const playerOne = JSON.parse(localStorage.getItem('user_one')) || '';
+    const playerTwo = JSON.parse(localStorage.getItem('user_two')) || '';
 
     //display players
     document.querySelector('.player_one').innerHTML = playerOne.name;
     document.querySelector('.player_two').innerHTML = playerTwo.name;
 
     //Number of cards remaining in deck
-    let gameDeck; //the newly shuffle deck for each game
+    let gameDeck = localStorage.getItem('gameDeck') ? JSON.stringify(localStorage.getItem('gameDeck')) : [];
 
     const cards = [
         // { cardType: 'Spade', cardValue: 'Big Joker' },
         // { cardType: 'Spade', cardValue: 'Little Joker' },
-        { cardType: 'Spade', cardValue: 'Ace', cardWeight: 27 },
-        { cardType: 'Spade', cardValue: 'King', cardWeight: 26 },
-        { cardType: 'Spade', cardValue: 'Queen', cardWeight: 25 },
-        { cardType: 'Spade', cardValue: 'Jack', cardWeight: 24 },
-        { cardType: 'Spade', cardValue: '10', cardWeight: 23 },
-        { cardType: 'Spade', cardValue: '9', cardWeight: 22 },
-        { cardType: 'Spade', cardValue: '8', cardWeight: 21 },
-        { cardType: 'Spade', cardValue: '7', cardWeight: 20 },
-        { cardType: 'Spade', cardValue: '6', cardWeight: 19 },
-        { cardType: 'Spade', cardValue: '5', cardWeight: 18 },
-        { cardType: 'Spade', cardValue: '4', cardWeight: 17 },
-        { cardType: 'Spade', cardValue: '3', cardWeight: 16 },
-        { cardType: 'Spade', cardValue: '2', cardWeight: 15 },
-        { cardType: 'Diamond', cardValue: 'Ace', cardWeight: 14 },
-        { cardType: 'Diamond', cardValue: 'King', cardWeight: 13 },
-        { cardType: 'Diamond', cardValue: 'Queen', cardWeight: 12 },
-        { cardType: 'Diamond', cardValue: 'Jack', cardWeight: 11 },
-        { cardType: 'Diamond', cardValue: '10', cardWeight: 10 },
-        { cardType: 'Diamond', cardValue: '9', cardWeight: 9 },
-        { cardType: 'Diamond', cardValue: '8', cardWeight: 8 },
-        { cardType: 'Diamond', cardValue: '7', cardWeight: 7 },
-        { cardType: 'Diamond', cardValue: '6', cardWeight: 6 },
-        { cardType: 'Diamond', cardValue: '5', cardWeight: 5 },
-        { cardType: 'Diamond', cardValue: '4', cardWeight: 4 },
-        { cardType: 'Diamond', cardValue: '3', cardWeight: 3 },
-        { cardType: 'Diamond', cardValue: '2', cardWeight: 2 },
-        { cardType: 'Club', cardValue: 'Ace', cardWeight: 14 },
-        { cardType: 'Club', cardValue: 'King', cardWeight: 13 },
-        { cardType: 'Club', cardValue: 'Queen', cardWeight: 12 },
-        { cardType: 'Club', cardValue: 'Jack', cardWeight: 11 },
-        { cardType: 'Club', cardValue: '10', cardWeight: 10 },
-        { cardType: 'Club', cardValue: '9', cardWeight: 9 },
-        { cardType: 'Club', cardValue: '8', cardWeight: 8 },
-        { cardType: 'Club', cardValue: '7', cardWeight: 7 },
-        { cardType: 'Club', cardValue: '6', cardWeight: 6 },
-        { cardType: 'Club', cardValue: '5', cardWeight: 5 },
-        { cardType: 'Club', cardValue: '4', cardWeight: 4 },
-        { cardType: 'Club', cardValue: '3', cardWeight: 3 },
-        { cardType: 'Club', cardValue: '2', cardWeight: 2 },
-        { cardType: 'Heart', cardValue: 'Ace', cardWeight: 14 },
-        { cardType: 'Heart', cardValue: 'King', cardWeight: 13 },
-        { cardType: 'Heart', cardValue: 'Queen', cardWeight: 12 },
-        { cardType: 'Heart', cardValue: 'Jack', cardWeight: 11 },
-        { cardType: 'Heart', cardValue: '10', cardWeight: 10 },
-        { cardType: 'Heart', cardValue: '9', cardWeight: 9 },
-        { cardType: 'Heart', cardValue: '8', cardWeight: 8 },
-        { cardType: 'Heart', cardValue: '7', cardWeight: 7 },
-        { cardType: 'Heart', cardValue: '6', cardWeight: 6 },
-        { cardType: 'Heart', cardValue: '5', cardWeight: 5 },
-        { cardType: 'Heart', cardValue: '4', cardWeight: 4 },
-        { cardType: 'Heart', cardValue: '3', cardWeight: 3 },
-        { cardType: 'Heart', cardValue: '2', cardWeight: 2 },
-        { cardType: 'Bop', cardValue: 'Pass to next player', cardWeight: 28 },
-        { cardType: 'Bop', cardValue: 'Pass to next player', cardWeight: 28 },
-        { cardType: 'Bop', cardValue: 'Pass to next player', cardWeight: 28 },
-        { cardType: 'Bop', cardValue: 'Pass to next player', cardWeight: 28 },
-        { cardType: 'Booop', cardValue: 'Take a double shot', cardWeight: 0 },
+        { id: 1, cardType: 'Spade', cardValue: 'Ace', cardWeight: 27 },
+        { id: 2, cardType: 'Spade', cardValue: 'King', cardWeight: 26 },
+        { id: 3, cardType: 'Spade', cardValue: 'Queen', cardWeight: 25 },
+        { id: 4, cardType: 'Spade', cardValue: 'Jack', cardWeight: 24 },
+        { id: 5, cardType: 'Spade', cardValue: '10', cardWeight: 23 },
+        { id: 6, cardType: 'Spade', cardValue: '9', cardWeight: 22 },
+        { id: 7, cardType: 'Spade', cardValue: '8', cardWeight: 21 },
+        { id: 8, cardType: 'Spade', cardValue: '7', cardWeight: 20 },
+        { id: 9, cardType: 'Spade', cardValue: '6', cardWeight: 19 },
+        { id: 10, cardType: 'Spade', cardValue: '5', cardWeight: 18 },
+        { id: 11, cardType: 'Spade', cardValue: '4', cardWeight: 17 },
+        { id: 12, cardType: 'Spade', cardValue: '3', cardWeight: 16 },
+        { id: 13, cardType: 'Spade', cardValue: '2', cardWeight: 15 },
+        { id: 14, cardType: 'Diamond', cardValue: 'Ace', cardWeight: 14 },
+        { id: 15, cardType: 'Diamond', cardValue: 'King', cardWeight: 13 },
+        { id: 16, cardType: 'Diamond', cardValue: 'Queen', cardWeight: 12 },
+        { id: 17, cardType: 'Diamond', cardValue: 'Jack', cardWeight: 11 },
+        { id: 18, cardType: 'Diamond', cardValue: '10', cardWeight: 10 },
+        { id: 19, cardType: 'Diamond', cardValue: '9', cardWeight: 9 },
+        { id: 20, cardType: 'Diamond', cardValue: '8', cardWeight: 8 },
+        { id: 21, cardType: 'Diamond', cardValue: '7', cardWeight: 7 },
+        { id: 22, cardType: 'Diamond', cardValue: '6', cardWeight: 6 },
+        { id: 23, cardType: 'Diamond', cardValue: '5', cardWeight: 5 },
+        { id: 24, cardType: 'Diamond', cardValue: '4', cardWeight: 4 },
+        { id: 25, cardType: 'Diamond', cardValue: '3', cardWeight: 3 },
+        { id: 26, cardType: 'Diamond', cardValue: '2', cardWeight: 2 },
+        { id: 27, cardType: 'Club', cardValue: 'Ace', cardWeight: 14 },
+        { id: 28, cardType: 'Club', cardValue: 'King', cardWeight: 13 },
+        { id: 29, cardType: 'Club', cardValue: 'Queen', cardWeight: 12 },
+        { id: 30, cardType: 'Club', cardValue: 'Jack', cardWeight: 11 },
+        { id: 31, cardType: 'Club', cardValue: '10', cardWeight: 10 },
+        { id: 32, cardType: 'Club', cardValue: '9', cardWeight: 9 },
+        { id: 33, cardType: 'Club', cardValue: '8', cardWeight: 8 },
+        { id: 34, cardType: 'Club', cardValue: '7', cardWeight: 7 },
+        { id: 35, cardType: 'Club', cardValue: '6', cardWeight: 6 },
+        { id: 36, cardType: 'Club', cardValue: '5', cardWeight: 5 },
+        { id: 37, cardType: 'Club', cardValue: '4', cardWeight: 4 },
+        { id: 38, cardType: 'Club', cardValue: '3', cardWeight: 3 },
+        { id: 39, cardType: 'Club', cardValue: '2', cardWeight: 2 },
+        { id: 40, cardType: 'Heart', cardValue: 'Ace', cardWeight: 14 },
+        { id: 41, cardType: 'Heart', cardValue: 'King', cardWeight: 13 },
+        { id: 42, cardType: 'Heart', cardValue: 'Queen', cardWeight: 12 },
+        { id: 43, cardType: 'Heart', cardValue: 'Jack', cardWeight: 11 },
+        { id: 44, cardType: 'Heart', cardValue: '10', cardWeight: 10 },
+        { id: 45, cardType: 'Heart', cardValue: '9', cardWeight: 9 },
+        { id: 46, cardType: 'Heart', cardValue: '8', cardWeight: 8 },
+        { id: 47, cardType: 'Heart', cardValue: '7', cardWeight: 7 },
+        { id: 48, cardType: 'Heart', cardValue: '6', cardWeight: 6 },
+        { id: 49, cardType: 'Heart', cardValue: '5', cardWeight: 5 },
+        { id: 50, cardType: 'Heart', cardValue: '4', cardWeight: 4 },
+        { id: 51, cardType: 'Heart', cardValue: '3', cardWeight: 3 },
+        { id: 52, cardType: 'Heart', cardValue: '2', cardWeight: 2 },
+        { id: 53, cardType: 'Bop', cardValue: 'Pass to next player', cardWeight: 28 },
+        { id: 54, cardType: 'Bop', cardValue: 'Pass to next player', cardWeight: 28 },
+        { id: 55, cardType: 'Bop', cardValue: 'Pass to next player', cardWeight: 28 },
+        { id: 56, cardType: 'Bop', cardValue: 'Pass to next player', cardWeight: 28 },
+        { id: 57, cardType: 'Booop', cardValue: 'Take a double shot', cardWeight: 0 },
       ];
 
-      document.querySelector('.cards-remaining').innerHTML = cards.length || 0;
+      
 
       // let randomNum = Math.floor(Math.random() * (cards.length - 1));
 
       function initializeGame(){
+        localStorage.clear();
         document.querySelector('.game-area__chooser').style.display = 'none';
-        document.querySelector('.player_one__score').innerHTML = playerOne.points || 0;
-        document.querySelector('.player_two__score').innerHTML = playerTwo.points || 0;
+        document.querySelector('.cards-remaining').innerHTML = 0;
 
         document.querySelector('.game-area__player-flip').style.display = 'none';
+
+        localStorage.setItem('user_choice', 'user_one');
       }
 
       initializeGame();
@@ -150,12 +159,14 @@
         document.querySelector('.game-area__player-flip').innerHTML = `${playerOne.name } flip`;
 
         document.querySelector('.game-area__new-game-btn').style.display = 'none';
-
-        //shuffle game deck
-        gameDeck = shuffle(cards);
-        console.log('New game deck: ', gameDeck);
+        //shuffle game deck  store new deck
+        localStorage.setItem('gameDeck', JSON.stringify(shuffle(cards)));
+        //Set initial deck count
+        document.querySelector('.cards-remaining').innerHTML = JSON.parse(localStorage.getItem('gameDeck')).length;
         //set player points to zero
-       
+
+        document.querySelector('.player_one__score').innerHTML = playerOne.points || 0;
+        document.querySelector('.player_two__score').innerHTML = playerTwo.points || 0;
       }
 
       function shuffle(a) {
@@ -168,6 +179,43 @@
 
       function flipCard() {
         //random choose a 
+        const userChoice = localStorage.getItem('user_choice');
+        let updatedDeck;
+        gameDeck = JSON.parse(localStorage.getItem('gameDeck'));
+      
+
+        let nextCard;
+
+        if(userChoice === "user_one"){
+          nextCard = gameDeck[0];
+          document.querySelector('.player_one_card').innerHTML = `Player one ${nextCard.cardType} ${nextCard.cardValue}`;
+
+          //display card
+          updatedDeck = JSON.stringify(gameDeck.filter(item => item.id !== nextCard.id));
+          localStorage.setItem('gameDeck', updatedDeck);
+          document.querySelector('.cards-remaining').innerHTML = JSON.parse(localStorage.getItem('gameDeck')).length;
+
+          //Move to player 2
+          localStorage.setItem('user_choice', 'user_two');
+          document.querySelector('.game-area__chooser').innerHTML = `${playerTwo.name} make a selection`;
+          document.querySelector('.game-area__player-flip').innerHTML = `${playerTwo.name} flip`;
+        }
+
+        if(userChoice === "user_two"){
+          nextCard = gameDeck[0];
+          document.querySelector('.player_two_card').innerHTML = `Player two ${nextCard.cardType} ${nextCard.cardValue}`;
+
+          //display card
+          updatedDeck = JSON.stringify(gameDeck.filter(item => item.id !== nextCard.id));
+          localStorage.setItem('gameDeck', updatedDeck);
+          document.querySelector('.cards-remaining').innerHTML = JSON.parse(localStorage.getItem('gameDeck')).length;
+
+          //Move to player 1
+          localStorage.setItem('user_choice', 'user_one');
+          document.querySelector('.game-area__chooser').innerHTML = `${playerOne.name} make a selection`;
+          document.querySelector('.game-area__player-flip').innerHTML = `${playerOne.name} flip`;
+
+        }
       }
     
   </script>
