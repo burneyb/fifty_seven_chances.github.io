@@ -3,7 +3,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Start New Game</title>
+  <title>Whoop, Whop, Bam</title>
   <style>
     .score-bar{
       display: flex; 
@@ -25,6 +25,45 @@
   </style>
 </head>
 <body>
+
+    <!-- //GameTableComponent -->
+    <!-- <GameTable gameType="whoop-whopty-game"></GameTable> -->
+    <!-- //ScoreBarComponent -->
+    <!-- <ScoreBarComponent players="arrayOfPlayers" numberOfRounds="10"></ScoreBarComponent> -->
+      <!-- //ScoreComponent -->
+      <!-- <Score player="player" playerPosition="3"></Score> -->
+      <!-- //ScoreComponent -->
+    <!-- //DisplayMessageComponent -->
+    <!-- <DisplayMessage messageType="displayWinner"></DisplayMessage> -->
+
+    <!-- const messageMap = {
+      displayWinner: "Player {playerPostion} wins"
+    } -->
+    <!-- //PlayerSelectionComponent -->
+    <!-- <PlayerSelection selector="user"></PlayerSelection> -->
+    <!-- //CardDeckComponent -->
+    <!-- <CardDeck cardDeck="fiftySevenCards"></CardDeck> -->
+    <!-- //CardComponent -->
+    <!-- <Card type="diamond" value="7" hasBeenDisplayed="true"></Card> -->
+    <!-- //ButtonComponent -->
+    <!-- <Button type="shuffle"></Button> -->
+      <!-- Takes a a buttonType
+          shuffle 
+          selection
+          flipCard
+          newGame -->
+
+    <!-- //A new is initiated
+    //Add Players or Teams
+    //Start New Game
+    //The deck is shuffled
+    //Player one goes first
+    //Game continues through the lenght of deck which is 57 cards -->
+
+
+
+
+
   <div class="container">
       <a href="index.html">Back home</a>
       <div class="row">
@@ -39,7 +78,7 @@
       <!-- card deck and player selection -->
       <div class="row">
         <div class="game-area__header">
-          <div class="game-area__chooser"><span class="message">make a selection</span></div>
+          <!-- <div class="game-area__chooser"><span class="message">make a selection</span></div> -->
           <div class="card-deck">Number of cards: <span class="cards-remaining"></span></div>
         </div>
       </div>
@@ -47,7 +86,7 @@
       <div class="row game">
         <div class="col-md-3">
           <button class="game-area__new-game-btn" onclick="newGame()">Start New Game</button>
-          <button class="game-area__player-flip" onclick="flipCard()"><span class="current_player">flip</span></button>
+          <button class="game-area__player-flip" onclick="flipCard()"><span class="current_flip"></span></button>
         </div>
      
         <div class="col-md-3">
@@ -62,9 +101,18 @@
       </div>
     </div>
     <div class="row">
+      <div class="col-md-12">
+        <div class="guess-buttons">
+          <button onclick="guessNextCardValue('up')">Whoop (Up)</button>
+          <button onclick="guessNextCardValue('down')">Whop (Down)</button>
+        </div>
+   
+      </div>
+    </div>
+    <div class="row">
       <div class="display-winner"></div>
       <button onclick="clear()">Clear</button>
-     
+
     </div>
     
   </div>
@@ -72,19 +120,16 @@
   
   <script>
     //players
-    const playerOne = JSON.parse(localStorage.getItem('playerOne')) || { name: 'Player 1', points: 0, turn: true };
-    const playerTwo = JSON.parse(localStorage.getItem('playerTwo')) || { name: 'Player 2', points: 0, turn: false };
+    const players = JSON.parse(localStorage.getItem('players'));
 
     //display players
-    document.querySelector('.player_one').innerHTML = playerOne.name;
-    document.querySelector('.player_two').innerHTML = playerTwo.name;
+    document.querySelector('.player_one').innerHTML = players[0].name;
+    document.querySelector('.player_two').innerHTML = players[1].name;
 
     //Number of cards remaining in deck
     let gameDeck = localStorage.getItem('gameDeck') ? JSON.stringify(localStorage.getItem('gameDeck')) : [];
 
     const cards = [
-        // { cardType: 'Spade', cardValue: 'Big Joker' },
-        // { cardType: 'Spade', cardValue: 'Little Joker' },
         { id: 1, cardType: 'Spade', cardValue: 'Ace', cardWeight: 27 },
         { id: 2, cardType: 'Spade', cardValue: 'King', cardWeight: 26 },
         { id: 3, cardType: 'Spade', cardValue: 'Queen', cardWeight: 25 },
@@ -137,43 +182,56 @@
         { id: 50, cardType: 'Heart', cardValue: '4', cardWeight: 4 },
         { id: 51, cardType: 'Heart', cardValue: '3', cardWeight: 3 },
         { id: 52, cardType: 'Heart', cardValue: '2', cardWeight: 2 },
-        { id: 53, cardType: 'Bop', cardValue: 'Pass to next player', cardWeight: 28 },
-        { id: 54, cardType: 'Bop', cardValue: 'Pass to next player', cardWeight: 28 },
-        { id: 55, cardType: 'Bop', cardValue: 'Pass to next player', cardWeight: 28 },
-        { id: 56, cardType: 'Bop', cardValue: 'Pass to next player', cardWeight: 28 },
-        { id: 57, cardType: 'Booop', cardValue: 'Take a double shot', cardWeight: 0 },
+        { id: 53, cardType: 'Bop', cardValue: 'High Card', cardWeight: 28 },
+        { id: 54, cardType: 'Bop', cardValue: 'High Card', cardWeight: 28 },
+        { id: 55, cardType: 'Bop', cardValue: 'High Card', cardWeight: 28 },
+        { id: 56, cardType: 'Bop', cardValue: 'High Card', cardWeight: 28 },
+        { id: 57, cardType: 'Boop', cardValue: 'Highest', cardWeight: 29 },
       ];
 
       function initializeGame(){
         localStorage.clear();
         //Do not display user until new game
-        document.querySelector('.game-area__chooser').style.display = 'none';
+        document.querySelector('.current_flip').style.display = 'none';
         document.querySelector('.cards-remaining').innerHTML = 0;
 
-        document.querySelector('.game-area__player-flip').style.display = 'none';
+        document.querySelector('.guess-buttons').style.display = 'none';
       }
 
       initializeGame();
 
-      function newGame() {
-        localStorage.setItem('player_choice', 'player_one');
-        //display player one and player choice
-        document.querySelector('.game-area__chooser').style.display = 'block';
-        document.querySelector('.game-area__player-flip').style.display = 'block';
+      function newGame(){
+        const initialPlayer = setInitialPlayer();
+       
+        //display first player to throw card
+        document.querySelector('.current_flip').style.display = 'block';
+        document.querySelector('.current_flip').innerHTML = `${initialPlayer.name} click to flip card`;
 
-        document.querySelector('.game-area__chooser').innerHTML = `${playerOne.name} make a selection` ;
-        document.querySelector('.game-area__player-flip').innerHTML = `${playerOne.name } flip`;
-
+        //Hide new game button
         document.querySelector('.game-area__new-game-btn').style.display = 'none';
         //shuffle game deck store new deck
+    
         localStorage.setItem('gameDeck', JSON.stringify(shuffle(cards)));
-
         //Set initial deck count
         document.querySelector('.cards-remaining').innerHTML = JSON.parse(localStorage.getItem('gameDeck')).length;
 
         //set player points to zero
-        document.querySelector('.player_one__score').innerHTML = playerOne.points;
-        document.querySelector('.player_two__score').innerHTML = playerTwo.points;
+        document.querySelector('.player_one__score').innerHTML = players[0].points;
+        document.querySelector('.player_two__score').innerHTML = players[1].points;
+      }
+
+      function setInitialPlayer() {
+        const randomIndex = Math.floor(Math.random() * 2);
+         
+        if(randomIndex === 0){
+          players[0] = { id: players[0].id, name: players[0].name, points: players[0].points, initial: true, option: false };
+          players[1] = { id: players[1].id, name: players[1].name, points: players[1].points, initial: false, option: true };
+        } else {
+          players[1] = { id: players[1].id, name: players[1].name, points: players[1].points, initial: true, option: false };
+          players[0] = { id: players[0].id, name: players[0].name, points: players[0].points, initial: false, option: true };
+        }
+        
+        return players[randomIndex];
       }
 
       function shuffle(a) {
@@ -186,39 +244,21 @@
 
       function clear(){
         document.querySelector('.display-winner').innerHTML = '';
-        //Move to player 2
-        localStorage.setItem('player_choice', 'player_one');
+        
+        setInitialPlayer();
+
         document.querySelector('.game-area__chooser').innerHTML = `${playerOne.name} make a selection`;
         document.querySelector('.game-area__player-flip').innerHTML = `${playerOne.name} flip`;
       }
 
       function flipCard() {
-        //random choose a 
-        const userChoice = localStorage.getItem('player_choice');
+        const playerOptionToGuess = JSON.parse(localStorage.getItem('players')).filter(player => !player.timeToGuess);
+        const shuffledGameDeck = JSON.parse(localStorage.getItem('gameDeck'));
+
         let updatedDeck;
-
-        gameDeck = JSON.parse(localStorage.getItem('gameDeck'));
-
         let nextCard;
 
-        if(userChoice === "player_one"){
-          nextCard = gameDeck[0];
-          //set firstCardOption 
-          localStorage.setItem('firstCardOption', JSON.stringify(nextCard.cardWeight));
-          document.querySelector('.player_one_card').innerHTML = `Player one ${nextCard.cardType} ${nextCard.cardValue}`;
-
-          //display card
-          updatedDeck = JSON.stringify(gameDeck.filter(item => item.id !== nextCard.id));
-          localStorage.setItem('gameDeck', updatedDeck);
-          document.querySelector('.cards-remaining').innerHTML = JSON.parse(localStorage.getItem('gameDeck')).length;
-
-          //Move to player 2
-          localStorage.setItem('player_choice', 'player_two');
-          document.querySelector('.game-area__chooser').innerHTML = `${playerTwo.name} make a selection`;
-          document.querySelector('.game-area__player-flip').innerHTML = `${playerTwo.name} flip`;
-        }
-
-        if(userChoice === "player_two"){
+        if(playerOptionToGuess[0].id === 1) {
           nextCard = gameDeck[0];
           localStorage.setItem('secondCardOption', JSON.stringify(nextCard.cardWeight));
           document.querySelector('.player_two_card').innerHTML = `Player two ${nextCard.cardType} ${nextCard.cardValue}`;
@@ -228,27 +268,80 @@
           localStorage.setItem('gameDeck', updatedDeck);
           document.querySelector('.cards-remaining').innerHTML = JSON.parse(localStorage.getItem('gameDeck')).length;
 
-          //card choices
-          const firstCard = parseInt(localStorage.getItem('firstCardOption'));
-          const secondCard = parseInt(localStorage.getItem('secondCardOption'));
-     
-          if(firstCard === 0 && secondCard === 28){
-            document.querySelector('.display-winner').innerHTML = `${playerOne.name} got BOPPED and must take 3 shots`;
-          } else if (firstCard === 28 && secondCard === 28) {
-            document.querySelector('.display-winner').innerHTML = `$Both players must take a shot`;
-          } else if (firstCard === 28 && secondCard === 0) {
-            document.querySelector('.display-winner').innerHTML = `${playerTwo.name} got BOPPED and must take 3 shots`;
-          } else if( firstCard === 28 && secondCard !== 0 || 28){
-            document.querySelector('.display-winner').innerHTML = `${playerTwo.name} got BOPPED and must take 1 shots`;
-          } else if (firstCard === 28 && secondCard !== 0 || 28) {
-            document.querySelector('.display-winner').innerHTML = `${playerTwo.name} got BOPPED and must take 1 shots`;
-          } else if(firstCard > secondCard){
-            document.querySelector('.display-winner').innerHTML = `${playerOne.name} wins. ${playerTow.name} take a shot`;
-          } else {
-            document.querySelector('.display-winner').innerHTML = `${playerTwo.name} wins. ${playerOne.name} take a shot`;
-          }
+          displayOptions();
+
+          //Move to player 1 Option
+          playerOptionToGuess[0].timeToGuess = false;
+        }
+
+        if(playerOptionToGuess[0].id === 2){
+          nextCard = shuffledGameDeck[0];
+          //set firstCardOption 
+          localStorage.setItem('firstCardOption', JSON.stringify(nextCard.cardWeight));
+          document.querySelector('.player_one_card').innerHTML = `Player one ${nextCard.cardType} ${nextCard.cardValue}`;
+
+          //display card
+          updatedDeck = JSON.stringify(gameDeck.filter(item => item.id !== nextCard.id));
+          localStorage.setItem('gameDeck', updatedDeck);
+          document.querySelector('.cards-remaining').innerHTML = JSON.parse(localStorage.getItem('gameDeck')).length;
+
+          displayOptions();
+        
+          playerOptionToGuess[0].timeToGuess = false;;
         }
       }
+
+      function displayOptions() {
+        document.querySelector('.guess-buttons').style.display = 'block';
+      }
+
+      
+      function guessNextCardValue(value){
+        const firstCard = parseInt(localStorage.getItem('firstCardOption'));
+        const secondCard = parseInt(localStorage.getItem('secondCardOption'));
+
+        //if first card equals a boop and second car equals a bop
+        const cardOptions = {
+          firstCard,
+          secondCard
+        };
+
+        const playerChoice = localStorage.getItem('player_choice');
+
+        flipCard();
+        displayWinner(cardOptions, playerChoice);
+      }
+
+          
+          // Use comparison logic for another game
+      function displayWinner(cardOptions, playerChoice) {
+          if(playerChoice === "player_one"){
+
+          }
+
+          if(playerOne === "player_two"){
+
+          }
+
+          // if(cardOptions.firstCard === 29 && cardOptions.secondCard === 28){
+
+          //   document.querySelector('.display-winner').innerHTML = "You got Whoop Whopty Bammed! Player 2 Wins";
+          // } else if(cardOptions.firstCard === 28 && cardOptions.secondCard === 29){
+          //   document.querySelector('.display-winner').innerHTML = "You got booped! Player 2 Wins";
+          // }else if(cardOptions.firstCard === 28 && cardOptions.secondCard < 28){
+          //   document.querySelector('.display-winner').innerHTML = "You got bopped! Player 1 Wins";
+          // } else if(cardOptions.firstCard < 28 && cardOptions.secondCard === 28){
+          //   document.querySelector('.display-winner').innerHTML = "You got bopped! Player 2 Wins";
+          // } else if(cardOptions.firstCard < 28 && cardOptions.secondCard < 28 && cardOptions.firstCard > cardOptions.secondCard){
+          //   document.querySelector('.display-winner').innerHTML = "Player 1 Wins";
+          // } else if(cardOptions.firstCard < 28 && cardOptions.secondCard < 28 && cardOptions.firstCard < cardOptions.secondCard){
+          //   document.querySelector('.display-winner').innerHTML = "Player 2 Wins";
+          // } else {
+          //   document.querySelector('.display-winner').innerHTML = `There has been a error`;
+          // }
+        }
+        
+         
     
   </script>
 </body>
